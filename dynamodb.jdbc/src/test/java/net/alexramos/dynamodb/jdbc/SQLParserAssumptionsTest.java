@@ -14,6 +14,7 @@ import org.apache.calcite.sql.SqlNumericLiteral;
 import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.ddl.SqlColumnDeclaration;
 import org.apache.calcite.sql.ddl.SqlCreateTable;
+import org.apache.calcite.sql.ddl.SqlKeyConstraint;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.parser.SqlParser.Config;
@@ -75,7 +76,27 @@ public class SQLParserAssumptionsTest {
 		Assert.assertEquals("X", sqlColumnDeclaration.name.getSimple());
 		Assert.assertEquals("INTEGER", sqlColumnDeclaration.dataType.getTypeName().getSimple());
 	}
-	
+
+	@Test
+	public void testCreateWithKey() throws SqlParseException {
+		SqlParser sqlParser = SqlParser.create(new SourceStringReader("create table t1 (x int, y int, z int, primary key (y)) "), CONFIG);
+		SqlNode sqlNode = sqlParser.parseQuery();
+
+		Assert.assertEquals(SqlKind.CREATE_TABLE, sqlNode.getKind());
+		
+		SqlCreateTable create = (SqlCreateTable) sqlNode;
+		Assert.assertEquals("T1", create.name.getSimple());
+		final SqlColumnDeclaration sqlColumnDeclaration = (SqlColumnDeclaration)create.columnList.get(0);
+		Assert.assertEquals("X", sqlColumnDeclaration.name.getSimple());
+		Assert.assertEquals("INTEGER", sqlColumnDeclaration.dataType.getTypeName().getSimple());
+		
+		SqlKeyConstraint pk = (SqlKeyConstraint) create.columnList.get(3);
+		final SqlNode sqlNode3 = pk.getOperandList().get(1);
+		Assert.assertEquals("PRIMARY KEY", pk.getOperator().getName());
+		Assert.assertEquals("Y", ((SqlIdentifier)((SqlNodeList)sqlNode3).get(0)).getSimple());
+		
+	}
+
 	@Test
 	public void testSimpleInsert() throws SqlParseException {
 		SqlParser sqlParser = SqlParser.create(new SourceStringReader("insert into t1 (x) values (42)"), CONFIG);
