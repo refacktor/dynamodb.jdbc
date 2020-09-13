@@ -1,10 +1,10 @@
 package net.alexramos.dynamodb.sqlengine;
 
-import net.alexramos.dynamodb.jdbc.DynamoConnection;
-import net.alexramos.dynamodb.jdbc.DynamoResultSet;
+import net.alexramos.dynamodb.jdbc.DynamoJdbcConnection;
+import net.alexramos.dynamodb.jdbc.DynamoJdbcResultSet;
 
 public interface ExecutableStatement {
 
-	public DynamoResultSet execute(DynamoConnection dynamoConnection);
+	public DynamoJdbcResultSet execute(DynamoJdbcConnection dynamoConnection);
 
 }

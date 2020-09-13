@@ -14,8 +14,8 @@ import org.apache.calcite.sql.ddl.SqlColumnDeclaration;
 import org.apache.calcite.sql.ddl.SqlCreateTable;
 import org.apache.calcite.sql.ddl.SqlKeyConstraint;
 
-import net.alexramos.dynamodb.jdbc.DynamoConnection;
-import net.alexramos.dynamodb.jdbc.DynamoResultSet;
+import net.alexramos.dynamodb.jdbc.DynamoJdbcConnection;
+import net.alexramos.dynamodb.jdbc.DynamoJdbcResultSet;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
 import software.amazon.awssdk.services.dynamodb.model.BillingMode;
@@ -62,7 +62,7 @@ class ExecutableSqlCreateTable implements ExecutableStatement {
 
     @SuppressWarnings("unchecked")
     @Override
-    public DynamoResultSet execute(DynamoConnection dynamoConnection) {
+    public DynamoJdbcResultSet execute(DynamoJdbcConnection dynamoConnection) {
 	DynamoDbClient client = dynamoConnection.getClient();
 	client.createTable(ctr -> {
 	    ctr.tableName(this.tableName);
@@ -74,7 +74,7 @@ class ExecutableSqlCreateTable implements ExecutableStatement {
 	    ctr.keySchema(builder -> builder.attributeName(primaryKey).keyType(KeyType.HASH));
 	    ctr.billingMode(BillingMode.PAY_PER_REQUEST);
 	});
-	return DynamoResultSet.OK;
+	return DynamoJdbcResultSet.OK;
     }
 
 }

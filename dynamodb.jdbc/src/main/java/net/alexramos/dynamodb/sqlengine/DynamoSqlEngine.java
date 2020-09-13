@@ -5,22 +5,22 @@ import java.sql.SQLException;
 
 import org.apache.calcite.sql.parser.SqlParseException;
 
-import net.alexramos.dynamodb.jdbc.DynamoConnection;
-import net.alexramos.dynamodb.jdbc.DynamoResultSet;
+import net.alexramos.dynamodb.jdbc.DynamoJdbcConnection;
+import net.alexramos.dynamodb.jdbc.DynamoJdbcResultSet;
 import software.amazon.awssdk.services.dynamodb.model.CreateTableRequest.Builder;
 
 public class DynamoSqlEngine {
 
-	private DynamoConnection dynamoConnection;
+	private DynamoJdbcConnection dynamoConnection;
 	
 	private ExecutableStatementFactory parser;
 
-	public DynamoSqlEngine(DynamoConnection dynamoConnection) {
+	public DynamoSqlEngine(DynamoJdbcConnection dynamoConnection) {
 		this.dynamoConnection = dynamoConnection;
 		this.parser = new ExecutableStatementFactory();
 	}
 
-	public DynamoResultSet executeQuery(String sql) throws SQLException {
+	public DynamoJdbcResultSet executeQuery(String sql) throws SQLException {
 		try {
 			ExecutableStatement exec = parser.compile(sql);
 			return exec.execute(dynamoConnection);

@@ -22,9 +22,9 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Map;
 
-public class DynamoResultSet implements ResultSet {
+public class DynamoJdbcResultSet implements ResultSet {
 	
-	public static final DynamoResultSet OK = new DynamoResultSet();
+	public static final DynamoJdbcResultSet OK = new DynamoJdbcResultSet();
 	
 	public final Integer getUpdateCount() {
 	    return this.updateCount;

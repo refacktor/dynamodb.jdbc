@@ -10,13 +10,13 @@ import java.util.List;
 
 import net.alexramos.dynamodb.sqlengine.DynamoSqlEngine;
 
-public class DynamoStatement implements Statement {
+public class DynamoJdbcStatement implements Statement {
 
     private DynamoSqlEngine sqlEngine;
 
-    private DynamoConnection dynamoConnection;
+    private DynamoJdbcConnection dynamoConnection;
 
-    private DynamoResultSet result;
+    private DynamoJdbcResultSet result;
 
     private List<String> batch = new LinkedList<>();
 
@@ -24,7 +24,7 @@ public class DynamoStatement implements Statement {
 
     private int maxRows;
 
-    public DynamoStatement(DynamoConnection dynamoConnection) {
+    public DynamoJdbcStatement(DynamoJdbcConnection dynamoConnection) {
 	this.dynamoConnection = dynamoConnection;
 	this.sqlEngine = dynamoConnection.getDynamoAdapter();
     }
@@ -40,7 +40,7 @@ public class DynamoStatement implements Statement {
     }
 
     @Override
-    public DynamoResultSet executeQuery(String sql) throws SQLException {
+    public DynamoJdbcResultSet executeQuery(String sql) throws SQLException {
 	return sqlEngine.executeQuery(sql);
     }
 
@@ -114,14 +114,14 @@ public class DynamoStatement implements Statement {
 
     @Override
     public ResultSet getResultSet() throws SQLException {
-	DynamoResultSet rs = result;
+	DynamoJdbcResultSet rs = result;
 	result = null;
 	return rs;
     }
 
     @Override
     public int getUpdateCount() throws SQLException {
-	DynamoResultSet rs = result;
+	DynamoJdbcResultSet rs = result;
 	result = null;
 	if(rs == null || rs.getUpdateCount() == null) {
 	    return -1;

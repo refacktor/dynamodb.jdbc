@@ -42,7 +42,7 @@ public class ExecutableStatementFactory {
 	}
 
 	public ExecutableStatement compile(SqlInsert sql) {
-		return null;
+		return new ExecutableSqlInsert(sql);
 	}
 
 	public ExecutableStatement compile(SqlSelect sql) {

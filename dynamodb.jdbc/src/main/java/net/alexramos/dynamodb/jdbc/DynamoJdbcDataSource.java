@@ -10,18 +10,18 @@ import javax.sql.DataSource;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
-public class DynamoSqlDataSource implements DataSource {
+public class DynamoJdbcDataSource implements DataSource {
     
     	private PrintWriter logWriter = new PrintWriter(System.err);
     	
 	private DynamoDbClient client;
 
-	public DynamoSqlDataSource(DynamoDbClient client) {
+	public DynamoJdbcDataSource(DynamoDbClient client) {
 	    super();
 	    this.client = client;
 	}
 	
-	public DynamoSqlDataSource() {
+	public DynamoJdbcDataSource() {
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class DynamoSqlDataSource implements DataSource {
 
 	@Override
 	public Connection getConnection() throws SQLException {
-		return new DynamoConnection(client);
+		return new DynamoJdbcConnection(client);
 	}
 
 	@Override
