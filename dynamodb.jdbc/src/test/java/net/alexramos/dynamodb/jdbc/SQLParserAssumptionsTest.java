@@ -112,4 +112,12 @@ public class SQLParserAssumptionsTest {
 		final SqlNumericLiteral operand = (SqlNumericLiteral) row.operands[0];
 		Assert.assertEquals(42, operand.intValue(true));
 	}
+
+	@Test
+	public void testSelectWhere() throws SqlParseException {
+	    SqlParser sqlParser = SqlParser.create(new SourceStringReader("SELECT x, y, words FROM TEST1 where x = 5 AND y = 9"), CONFIG);
+            SqlSelect sqlNode = (SqlSelect) sqlParser.parseQuery();
+            SqlBasicCall where = (SqlBasicCall) sqlNode.getWhere();
+            Assert.assertEquals(SqlKind.AND, where.getOperator().getKind());
+	}
 }

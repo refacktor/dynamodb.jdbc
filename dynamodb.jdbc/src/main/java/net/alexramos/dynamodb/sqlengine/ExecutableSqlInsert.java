@@ -6,24 +6,20 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.calcite.sql.SqlBasicCall;
-import org.apache.calcite.sql.SqlCharStringLiteral;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlInsert;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.SqlNumericLiteral;
 
 import net.alexramos.dynamodb.jdbc.DynamoJdbcConnection;
 import net.alexramos.dynamodb.jdbc.DynamoJdbcResultSet;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue.Builder;
 import software.amazon.awssdk.services.dynamodb.model.BatchWriteItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.BatchWriteItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.PutRequest;
@@ -59,18 +55,13 @@ public class ExecutableSqlInsert implements ExecutableStatement {
     private Map<String, AttributeValue> rowValue(SqlLiteral[] row) {
         Map<String, AttributeValue> out = new LinkedHashMap<>();
         for(int i=0; i < row.length; ++i) {
-            AttributeValue av;
-            if(row[i] instanceof SqlNumericLiteral) {
-                av = AttributeValue.builder().n(row[i].bigDecimalValue().toPlainString()).build();
-            }
-            else {
-                av = AttributeValue.builder().s(row[i].toValue()).build();
-            }
+            final SqlLiteral sqlLiteral = row[i];
+            AttributeValue av = ExecutableStatement.toAV(sqlLiteral);
             out.put(columns.get(i), av);
         }
         return out;
     }
-    
+
     private WriteRequest toWriteRequest(Map<String, AttributeValue> row) {
         return WriteRequest.builder().putRequest(PutRequest.builder()
                 .item(row).build()).build();

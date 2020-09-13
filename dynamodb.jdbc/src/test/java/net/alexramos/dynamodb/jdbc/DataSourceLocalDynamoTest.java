@@ -1,7 +1,8 @@
-package net.alexramos.dynamodb.sqlengine;
+package net.alexramos.dynamodb.jdbc;
 
 import java.net.URI;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
@@ -10,18 +11,15 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.cli.ParseException;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.amazonaws.services.dynamodbv2.exceptions.DynamoDBLocalServiceException;
 import com.amazonaws.services.dynamodbv2.local.main.ServerRunner;
 import com.amazonaws.services.dynamodbv2.local.server.DynamoDBProxyServer;
 
-import net.alexramos.dynamodb.jdbc.DynamoJdbcDataSource;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -31,7 +29,7 @@ import software.amazon.awssdk.services.dynamodb.model.DescribeTableResponse;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 
-public class DynamoSqlEngineTest {
+public class DataSourceLocalDynamoTest {
 
     private static DynamoDBProxyServer fakeCloud;
 
@@ -97,6 +95,19 @@ public class DynamoSqlEngineTest {
 	GetItemResponse response = cloudClient.getItem(GetItemRequest.builder().tableName("TEST1")
 	        .key(map).build());
 	Assert.assertEquals("five and two", response.item().get("WORDS").s());
+    }
+    
+    @Test
+    public void testSelect() throws SQLException {
+        try (Connection con = ds.getConnection(); Statement stmt = con.createStatement()) {
+            stmt.execute("insert into TEST1 (things, x, words) values (3, 3, 'double threes')");
+            ResultSet rs = stmt.executeQuery("SELECT things, x, words FROM TEST1 where things = 5");
+            Assert.assertTrue(rs.next());
+            Assert.assertEquals(5, rs.getInt(1));
+            Assert.assertEquals(2, rs.getInt(2));
+            Assert.assertEquals("five and two", rs.getString(3));
+        }
+        
     }
 
     @AfterClass

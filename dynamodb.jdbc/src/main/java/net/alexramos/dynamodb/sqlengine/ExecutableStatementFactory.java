@@ -46,7 +46,7 @@ public class ExecutableStatementFactory {
 	}
 
 	public ExecutableStatement compile(SqlSelect sql) {
-		return null;
+		return new ExecutableSqlSelect(sql);
 	}
 
 	public ExecutableStatement compile(String sql) throws SqlParseException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
