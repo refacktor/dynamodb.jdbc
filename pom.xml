@@ -61,7 +61,7 @@
                         <configuration>
                             <includeScope>test</includeScope>
                             <includeTypes>so,dll,dylib</includeTypes>
-                            <outputDirectory>${project.basedir}/native-libs</outputDirectory>
+                            <outputDirectory>${project.basedir}/test-libs</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>

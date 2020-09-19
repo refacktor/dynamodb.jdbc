@@ -39,7 +39,7 @@ public class DataSourceLocalDynamoTest {
     
     @BeforeClass
     public static void init() throws Exception {
-	System.setProperty("sqlite4java.library.path", "native-libs");
+	System.setProperty("sqlite4java.library.path", "test-libs");
 	String port = "8002";
 	fakeCloud = ServerRunner
 		.createServerFromCommandLineArgs(new String[] { "-inMemory", "-port", port });
