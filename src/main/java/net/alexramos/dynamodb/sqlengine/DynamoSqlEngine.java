@@ -4,28 +4,31 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 
 import org.apache.calcite.sql.parser.SqlParseException;
+import org.apache.calcite.sql.parser.SqlParser.Config;
 
 import net.alexramos.dynamodb.jdbc.DynamoJdbcConnection;
 import net.alexramos.dynamodb.jdbc.DynamoJdbcResultSet;
-import software.amazon.awssdk.services.dynamodb.model.CreateTableRequest.Builder;
 
 public class DynamoSqlEngine {
 
-	private DynamoJdbcConnection dynamoConnection;
-	
-	private ExecutableStatementFactory parser;
+    private DynamoJdbcConnection dynamoConnection;
 
-	public DynamoSqlEngine(DynamoJdbcConnection dynamoConnection) {
-		this.dynamoConnection = dynamoConnection;
-		this.parser = new ExecutableStatementFactory();
-	}
+    private ExecutableStatementFactory parser;
 
-	public DynamoJdbcResultSet executeQuery(String sql) throws SQLException {
-		try {
-			ExecutableStatement exec = parser.compile(sql);
-			return exec.execute(dynamoConnection);
-		} catch (SqlParseException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			throw new SQLException(sql, e);
-		}
-	}
+    public DynamoSqlEngine(DynamoJdbcConnection dynamoConnection,
+            Config parserConfig) {
+        this.dynamoConnection = dynamoConnection;
+        this.parser = new ExecutableStatementFactory(parserConfig);
+    }
+
+    public DynamoJdbcResultSet executeQuery(String sql) throws SQLException {
+        try {
+            ExecutableStatement exec = parser.compile(sql);
+            return exec.execute(dynamoConnection);
+        } catch (SqlParseException | NoSuchMethodException | SecurityException
+                | IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException e) {
+            throw new SQLException(sql, e);
+        }
+    }
 }

@@ -32,27 +32,31 @@ import org.junit.Test;
  * @author atram
  *
  */
-public class SQLParserAssumptionsTest {
+public class SqlParserAssumptionsTest {
 
-    private static final Config CONFIG = SqlParser.configBuilder().setParserFactory(SqlDdlParserImpl.FACTORY)
-            .setQuoting(Quoting.DOUBLE_QUOTE).setUnquotedCasing(Casing.TO_UPPER).setQuotedCasing(Casing.UNCHANGED)
+    private static final Config CONFIG = SqlParser.configBuilder()
+            .setParserFactory(SqlDdlParserImpl.FACTORY)
+            .setQuoting(Quoting.DOUBLE_QUOTE).setUnquotedCasing(Casing.TO_UPPER)
+            .setQuotedCasing(Casing.UNCHANGED)
             .setConformance(SqlConformanceEnum.STRICT_99).build();
 
     @Test
     public void testSimpleSelect() throws SqlParseException {
-        SqlParser sqlParser = SqlParser.create(new SourceStringReader("select x,y from z"), CONFIG);
+        SqlParser sqlParser = SqlParser
+                .create(new SourceStringReader("select x,y from z"), CONFIG);
         SqlNode sqlNode = sqlParser.parseQuery();
 
         Assert.assertEquals(SqlKind.SELECT, sqlNode.getKind());
 
-        @SuppressWarnings("unchecked")
-        SqlVisitor<Void> visitor = (SqlVisitor<Void>) Proxy.newProxyInstance(getClass().getClassLoader(),
-                new Class[] { SqlVisitor.class }, (proxy, method, args) -> {
-                    Assert.assertEquals(
-                            "public abstract java.lang.Object org.apache.calcite.sql.util.SqlVisitor.visit(org.apache.calcite.sql.SqlCall)",
-                            method.toString());
-                    return (Void) null;
-                });
+        @SuppressWarnings("unchecked") SqlVisitor<Void> visitor = (SqlVisitor<Void>) Proxy
+                .newProxyInstance(getClass().getClassLoader(),
+                        new Class[] { SqlVisitor.class },
+                        (proxy, method, args) -> {
+                            Assert.assertEquals(
+                                    "public abstract java.lang.Object org.apache.calcite.sql.util.SqlVisitor.visit(org.apache.calcite.sql.SqlCall)",
+                                    method.toString());
+                            return (Void) null;
+                        });
         sqlNode.accept(visitor);
 
         SqlSelect select = (SqlSelect) sqlNode;
@@ -67,49 +71,61 @@ public class SQLParserAssumptionsTest {
 
     @Test
     public void testSimpleCreate() throws SqlParseException {
-        SqlParser sqlParser = SqlParser.create(new SourceStringReader("create table t1 (x int)"), CONFIG);
+        SqlParser sqlParser = SqlParser.create(
+                new SourceStringReader("create table t1 (x int)"), CONFIG);
         SqlNode sqlNode = sqlParser.parseQuery();
 
         Assert.assertEquals(SqlKind.CREATE_TABLE, sqlNode.getKind());
 
         SqlCreateTable create = (SqlCreateTable) sqlNode;
         Assert.assertEquals("T1", create.name.getSimple());
-        final SqlColumnDeclaration sqlColumnDeclaration = (SqlColumnDeclaration) create.columnList.get(0);
+        final SqlColumnDeclaration sqlColumnDeclaration = (SqlColumnDeclaration) create.columnList
+                .get(0);
         Assert.assertEquals("X", sqlColumnDeclaration.name.getSimple());
-        Assert.assertEquals("INTEGER", sqlColumnDeclaration.dataType.getTypeName().getSimple());
+        Assert.assertEquals("INTEGER",
+                sqlColumnDeclaration.dataType.getTypeName().getSimple());
     }
 
     @Test
     public void testCreateWithKey() throws SqlParseException {
-        SqlParser sqlParser = SqlParser
-                .create(new SourceStringReader("create table t1 (x int, y int, z int, primary key (y)) "), CONFIG);
+        SqlParser sqlParser = SqlParser.create(new SourceStringReader(
+                "create table t1 (x int, y int, z int, primary key (y)) "),
+                CONFIG);
         SqlNode sqlNode = sqlParser.parseQuery();
 
         Assert.assertEquals(SqlKind.CREATE_TABLE, sqlNode.getKind());
 
         SqlCreateTable create = (SqlCreateTable) sqlNode;
         Assert.assertEquals("T1", create.name.getSimple());
-        final SqlColumnDeclaration sqlColumnDeclaration = (SqlColumnDeclaration) create.columnList.get(0);
+        final SqlColumnDeclaration sqlColumnDeclaration = (SqlColumnDeclaration) create.columnList
+                .get(0);
         Assert.assertEquals("X", sqlColumnDeclaration.name.getSimple());
-        Assert.assertEquals("INTEGER", sqlColumnDeclaration.dataType.getTypeName().getSimple());
+        Assert.assertEquals("INTEGER",
+                sqlColumnDeclaration.dataType.getTypeName().getSimple());
 
         SqlKeyConstraint pk = (SqlKeyConstraint) create.columnList.get(3);
         final SqlNode sqlNode3 = pk.getOperandList().get(1);
         Assert.assertEquals("PRIMARY KEY", pk.getOperator().getName());
-        Assert.assertEquals("Y", ((SqlIdentifier) ((SqlNodeList) sqlNode3).get(0)).getSimple());
+        Assert.assertEquals("Y",
+                ((SqlIdentifier) ((SqlNodeList) sqlNode3).get(0)).getSimple());
 
     }
 
     @Test
     public void testSimpleInsert() throws SqlParseException {
-        SqlParser sqlParser = SqlParser.create(new SourceStringReader("insert into t1 (x) values (42)"), CONFIG);
+        SqlParser sqlParser = SqlParser.create(
+                new SourceStringReader("insert into t1 (x) values (42)"),
+                CONFIG);
         SqlNode sqlNode = sqlParser.parseQuery();
 
         Assert.assertEquals(SqlKind.INSERT, sqlNode.getKind());
 
         SqlInsert insert = (SqlInsert) sqlNode;
-        Assert.assertEquals("T1", ((SqlIdentifier) insert.getTargetTable()).getSimple());
-        Assert.assertEquals("X", ((SqlIdentifier) insert.getTargetColumnList().get(0)).getSimple());
+        Assert.assertEquals("T1",
+                ((SqlIdentifier) insert.getTargetTable()).getSimple());
+        Assert.assertEquals("X",
+                ((SqlIdentifier) insert.getTargetColumnList().get(0))
+                        .getSimple());
         final SqlBasicCall source = (SqlBasicCall) insert.getSource();
         final SqlBasicCall row = (SqlBasicCall) source.getOperands()[0];
         final SqlNumericLiteral operand = (SqlNumericLiteral) row.operands[0];
@@ -118,8 +134,10 @@ public class SQLParserAssumptionsTest {
 
     @Test
     public void testSelectWhere() throws SqlParseException {
-        SqlParser sqlParser = SqlParser
-                .create(new SourceStringReader("SELECT x, y, words FROM TEST1 where x = 5 AND y = 9"), CONFIG);
+        SqlParser sqlParser = SqlParser.create(
+                new SourceStringReader(
+                        "SELECT x, y, words FROM TEST1 where x = 5 AND y = 9"),
+                CONFIG);
         SqlSelect sqlNode = (SqlSelect) sqlParser.parseQuery();
         SqlBasicCall where = (SqlBasicCall) sqlNode.getWhere();
         Assert.assertEquals(SqlKind.AND, where.getOperator().getKind());
@@ -128,7 +146,8 @@ public class SQLParserAssumptionsTest {
     @Test
     public void testMultipleStatements() throws SqlParseException {
         final String SQL = "SELECT 1; SELECT 2";
-        SqlParser sqlParser = SqlParser.create(new SourceStringReader(SQL), CONFIG);
+        SqlParser sqlParser = SqlParser.create(new SourceStringReader(SQL),
+                CONFIG);
         SqlNodeList sqlNode = (SqlNodeList) sqlParser.parseStmtList();
         Assert.assertEquals(2, sqlNode.size());
     }

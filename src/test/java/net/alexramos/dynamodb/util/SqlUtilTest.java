@@ -11,8 +11,10 @@ class SqlUtilTest {
 
     @Test
     void test() {
-        final String SQL = Files.contentOf(new File("src/test/mysqldump-test-1.ddl"), "utf8");
-        Stream<String> sqlStream = StreamSupport.stream(SqlUtil.splitStatements(SQL), false);
+        final String SQL = Files
+                .contentOf(new File("src/test/mysqldump-test-1.ddl"), "utf8");
+        Stream<String> sqlStream = StreamSupport
+                .stream(DynamodbSqlUtil.splitStatements(SQL), false);
 
         sqlStream.forEach(sqlNode -> {
             System.out.println("======================== \n" + sqlNode);

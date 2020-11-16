@@ -18,6 +18,7 @@ import org.apache.calcite.sql.SqlNode;
 
 import net.alexramos.dynamodb.jdbc.DynamoJdbcConnection;
 import net.alexramos.dynamodb.jdbc.DynamoJdbcResultSet;
+import net.alexramos.dynamodb.util.DynamodbSqlUtil;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.BatchWriteItemRequest;
@@ -56,7 +57,7 @@ public class ExecutableSqlInsert implements ExecutableStatement {
         Map<String, AttributeValue> out = new LinkedHashMap<>();
         for(int i=0; i < row.length; ++i) {
             final SqlLiteral sqlLiteral = row[i];
-            AttributeValue av = ExecutableStatement.toAV(sqlLiteral);
+            AttributeValue av = DynamodbSqlUtil.toAV(sqlLiteral);
             out.put(columns.get(i), av);
         }
         return out;
