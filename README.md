@@ -78,15 +78,19 @@ The following SQL Statements are currently implemented:
 
  * **What's the point of this project?**
  
-   I won't claim to know all possible use-cases. I created it because I wanted to get rid of the ongoing monthly
-   costs of maintaining an instance of MySQL running 24x7 for one of my low-traffic web applications, without 
-   sacrificing application availability or the user experience.
+   The ideal use-case is a bit elusive. I started experimenting with the idea because I wanted to get rid of 
+   the ongoing costs of maintaining an instance of MySQL running 24x7 for one of my low-traffic web applications.
    I looked into Aurora Serverless but found the auto-start latency after idle periods to be detrimental to
    end-user experience. DynamoDB provides low latency 24x7, without the overhead of fixed monthly costs.
    My application would not benefit from reorganizing the data to maximize DynamoDB performance, so the effort
-   boils down to swapping one API for another. Encapsulating all the changes in the JDBC driver was a cleaner,
+   boils down to swapping one API for another. Encapsulating all the changes in the JDBC driver seemed like a cleaner,
    more self-contained effort and it's readily reusable when I need to do the same thing to the next application.
-
- * **Why should I use this?**
-
-   If you have to ask, you probably shouldn't.
+   
+   **As of December, 2020, potentially better options have emerged**
+   
+   PartiQL - SQL-like interface for DynamoDB
+   https://aws.amazon.com/blogs/opensource/announcing-partiql-one-query-language-for-all-your-data/
+   
+   Aurora Serverless v2 - assuming the newly announced "fraction of a second" scaling applies to scaling from idle:
+   https://aws.amazon.com/about-aws/whats-new/2020/12/introducing-the-next-version-of-amazon-aurora-serverless-in-preview/
+   
