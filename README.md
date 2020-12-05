@@ -86,11 +86,13 @@ The following SQL Statements are currently implemented:
    boils down to swapping one API for another. Encapsulating all the changes in the JDBC driver seemed like a cleaner,
    more self-contained effort and it's readily reusable when I need to do the same thing to the next application.
    
-   **As of December, 2020, potentially better options have emerged**
+ * **As of December, 2020, potentially better options have emerged**
    
    PartiQL - SQL-like interface for DynamoDB
-   https://aws.amazon.com/blogs/opensource/announcing-partiql-one-query-language-for-all-your-data/
+   
+   - https://aws.amazon.com/blogs/opensource/announcing-partiql-one-query-language-for-all-your-data/
    
    Aurora Serverless v2 - assuming the newly announced "fraction of a second" scaling applies to scaling from idle:
-   https://aws.amazon.com/about-aws/whats-new/2020/12/introducing-the-next-version-of-amazon-aurora-serverless-in-preview/
+   
+   - https://aws.amazon.com/about-aws/whats-new/2020/12/introducing-the-next-version-of-amazon-aurora-serverless-in-preview/
    
